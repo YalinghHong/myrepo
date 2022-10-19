@@ -1,0 +1,55 @@
+---
+title: "HW3"
+author: "Yaling Hong"
+date: "2022/10/18"
+output: github_document
+---
+
+```{r,collapse=TRUE}
+library(dplyr)
+library(ggplot2)
+library(nycflights13)
+library(maps)
+```
+
+1
+
+```{r}
+flights%>%
+  group_by(dest)%>%
+  summarise(avg_delay=mean(arr_delay,na.rm=T))%>%
+  left_join(airports%>%select(faa,lat,lon),by=c("dest"="faa"))%>%
+  ggplot(aes(lon,lat))+
+  borders("state")+
+  geom_point(aes(color=avg_delay))+
+  xlab("longitude")+
+  ylab("latitude")+
+  ggtitle("Spatial Distribution of Average Delay for Each Airport")+
+  coord_quickmap()
+```
+
+2
+
+```{r}
+flights%>%
+  left_join(airports%>%select(faa,lat,lon),by=c("origin"="faa"))%>%
+  left_join(airports%>%select(faa,lat,lon),by=c("dest"="faa"),
+            suffix=c("_origin","_dest"))
+```
+
+
+3
+
+It is hard to conclude that there is a relationship between the age of the planes and delays. The confidential religion of those manufactured very ealy is very large because the number of the samples is little. Although some new planes tend to have higher delays, they also provide more flights. We cannot tell whether the carrier assign more flights to them because they are young. 
+
+
+
+```{r}
+flights%>%
+  group_by(tailnum)%>%
+  summarise(avg_delay=mean(arr_delay,na.rm=T))%>%
+  left_join(planes%>%select(tailnum,year),by="tailnum")%>%
+  ggplot(aes(x=year,y=avg_delay))+
+  geom_smooth()
+```
+
